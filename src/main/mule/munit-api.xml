@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="57e043d5-30eb-44cd-b3b5-48266fa0bbcf" >
+		<http:listener-connection host="localhost" port="8082" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="79c978e2-c37f-495f-9642-dc22449459fa" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="No217353" database="dev" />
+	</db:config>
+	<flow name="munit-apiFlow" doc:id="5fa267bc-a3b3-4020-b1b8-27cc6421dcc5" >
+		<http:listener doc:name="Listener" doc:id="48872a40-6a5a-42dd-b3bd-0ee65d17deca" config-ref="HTTP_Listener_config" path="/test"/>
+		<db:select doc:name="Select" doc:id="4767dcbf-89c0-4c89-9630-110944260109" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from employees;]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="48088625-3513-4111-971f-c91d3689d547" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="munit-apiFlow1" doc:id="d7330dce-9170-4d3a-a486-fb6d7d4d1b49" >
+		<http:listener doc:name="Listener" doc:id="bdefb375-69fe-41d3-b8eb-9ba1a49015d2" config-ref="HTTP_Listener_config" path="/test2" />
+		<file:read doc:id="4c2b0441-5064-4215-a9f1-d7e84cef13b8" path="F:/error.txt"/>
+		<ee:transform doc:name="Transform Message" doc:id="d26cd6c7-5448-441a-b768-9a165f7145be" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
